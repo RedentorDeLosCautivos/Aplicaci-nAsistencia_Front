@@ -7,7 +7,8 @@ export const RegistrarAsistencia = ({ actividadId }) => {
   const { tomarAsistencia, isLoading } = useAsistencia();
   const [qrScanned, setQrScanned] = useState(false);
   const [successData, setSuccessData] = useState(null);
-  const [facingMode, setFacingMode] = useState("environment"); // 🔁 controla cámara trasera o frontal
+  const [facingMode, setFacingMode] = useState("environment");
+  const [cameraError, setCameraError] = useState(false);
 
   const handleScan = async (result) => {
     if (result && !qrScanned) {
@@ -17,21 +18,16 @@ export const RegistrarAsistencia = ({ actividadId }) => {
         actividadId,
       });
 
-      if (response && !response.error) {
-        setSuccessData(response);
-      }
-
+      if (response && !response.error) setSuccessData(response);
       setTimeout(() => setQrScanned(false), 2500);
     }
   };
 
-  const toggleCamera = () => {
+  const toggleCamera = () =>
     setFacingMode((prev) => (prev === "environment" ? "user" : "environment"));
-  };
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full px-4 py-3 bg-white rounded-2xl">
-      {/* Encabezado */}
       <div className="flex flex-col items-center text-center mb-2">
         <div className="bg-[#0f172a] p-3 rounded-full text-white mb-2">
           <QrCode size={22} />
@@ -42,22 +38,28 @@ export const RegistrarAsistencia = ({ actividadId }) => {
         </p>
       </div>
 
-      {/* Lector QR */}
       <div className="flex-1 w-full flex flex-col items-center justify-center">
         {!successData ? (
           <>
             <div className="relative w-full max-w-xs aspect-square overflow-hidden rounded-xl border-2 border-[#0f172a]/10 shadow-sm">
               <QrReader
-                onResult={(result) => result && handleScan(result)}
-                constraints={{
-                  video: { facingMode: { ideal: facingMode } }, // 👈 se usa el modo actual
+                onResult={(result, error) => {
+                  if (result) handleScan(result);
+                  if (error) setCameraError(false);
                 }}
+                constraints={{ video: { facingMode } }}
+                onError={() => setCameraError(true)}
                 containerStyle={{ width: "100%", height: "100%" }}
                 videoStyle={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
 
-            {/* Botón para cambiar cámara */}
+            {cameraError && (
+              <p className="text-red-500 text-sm mt-2 text-center">
+                ⚠️ No se pudo acceder a la cámara. Verifica permisos en el navegador.
+              </p>
+            )}
+
             <button
               onClick={toggleCamera}
               className="mt-3 flex items-center gap-2 bg-[#0f172a] text-white px-3 py-2 rounded-xl text-sm font-medium hover:bg-[#1e293b] transition-all"
