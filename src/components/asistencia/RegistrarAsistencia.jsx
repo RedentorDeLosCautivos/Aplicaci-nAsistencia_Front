@@ -45,12 +45,27 @@ export const RegistrarAsistencia = ({ actividadId }) => {
               <QrReader
                 onResult={(result, error) => {
                   if (result) handleScan(result);
-                  if (error) setCameraError(false);
+                  if (error) console.warn("QR Reader error:", error);
                 }}
-                constraints={{ video: { facingMode } }}
-                onError={() => setCameraError(true)}
-                containerStyle={{ width: "100%", height: "100%" }}
-                videoStyle={{ width: "100%", height: "100%", objectFit: "cover" }}
+                constraints={{
+                  audio: false,
+                  video: {
+                    facingMode: { ideal: facingMode }, // usa 'ideal' en vez de directo
+                  },
+                }}
+                onError={(err) => {
+                  console.error("Camera error:", err);
+                  setCameraError(true);
+                }}
+                containerStyle={{
+                  width: "100%",
+                  height: "100%",
+                }}
+                videoStyle={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
               />
             </div>
 
