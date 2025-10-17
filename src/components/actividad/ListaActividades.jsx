@@ -21,7 +21,7 @@ export const ListaActividades = () => {
     const filtradas = actividades
       .filter((act) => {
         let fechaAct = new Date(act.fecha);
-        fechaAct.setDate(fechaAct.getDate() + 1); // Ajuste de zona horaria
+        fechaAct.setDate(fechaAct.getDate() + 1); 
         const fechaLocal = new Date(
           fechaAct.getTime() + fechaAct.getTimezoneOffset() * 60000
         );
@@ -98,9 +98,7 @@ export const ListaActividades = () => {
                   <div className="flex items-center gap-2">
                     <CalendarDays size={16} className="text-gray-600" />
                     <span className="capitalize">
-                      {esHoy ? (
-                        <strong>Hoy</strong>
-                      ) : (
+                      {(
                         fecha.toLocaleDateString("es-ES", {
                           weekday: "short",
                           day: "2-digit",
