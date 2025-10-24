@@ -15,31 +15,17 @@ export const ListaActividades = () => {
   }, []);
 
   useEffect(() => {
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-
     const filtradas = actividades
-      .filter((act) => {
-        let fechaAct = new Date(act.fecha);
-        fechaAct.setDate(fechaAct.getDate() + 1); 
-        const fechaLocal = new Date(
-          fechaAct.getTime() + fechaAct.getTimezoneOffset() * 60000
-        );
-        fechaLocal.setHours(0, 0, 0, 0);
-        return fechaLocal >= hoy;
-      })
       .filter((act) =>
         act.nombre.toLowerCase().includes(search.toLowerCase())
       )
-      .sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); 
 
     setFiltered(filtradas);
   }, [actividades, search]);
 
   if (isLoading) {
-    return (
-      <LoadingSpinner/>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -48,10 +34,9 @@ export const ListaActividades = () => {
         <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
           Actividades
         </h1>
-        <p className="text-white text-sm">Eventos próximos de la hermandad</p>
+        <p className="text-white text-sm">Lista completa de actividades registradas</p>
       </div>
 
-      {/* Buscar */}
       <div className="max-w-md mx-auto mb-8 relative">
         <Search size={18} className="absolute left-3 top-3.5 text-gray-400" />
         <input
@@ -63,21 +48,14 @@ export const ListaActividades = () => {
         />
       </div>
 
-      {/* Lista de actividades */}
       {filtered.length === 0 ? (
         <p className="text-center text-gray-400 mt-12">
-          No hay actividades próximas.
+          No hay actividades registradas.
         </p>
       ) : (
         <div className="flex flex-col gap-5">
-          {filtered.map((act, index) => {
+          {filtered.map((act) => {
             const fecha = new Date(act.fecha);
-            const hoy = new Date();
-            const esHoy =
-              fecha.getDate() === hoy.getDate() &&
-              fecha.getMonth() === hoy.getMonth() &&
-              fecha.getFullYear() === hoy.getFullYear();
-
             return (
               <div
                 key={act._id}
@@ -98,14 +76,12 @@ export const ListaActividades = () => {
                   <div className="flex items-center gap-2">
                     <CalendarDays size={16} className="text-gray-600" />
                     <span className="capitalize">
-                      {(
-                        fecha.toLocaleDateString("es-ES", {
-                          weekday: "short",
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })
-                      )}
+                      {fecha.toLocaleDateString("es-ES", {
+                        weekday: "short",
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </span>
                   </div>
 
